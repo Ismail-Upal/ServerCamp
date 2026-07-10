@@ -1,20 +1,64 @@
-﻿using System.Dynamic;
-
-public class House
+﻿
+public class Computer
 {
-   public List Rooms { get; } = new();
-   public House()
+   public string CPU { get; }
+   public int RAM { get; }
+   public int Storage { get; }
+   public bool HasGPU { get; }
+
+   private Computer(Builder builder)
    {
-      Rooms.Add(new Room("Living Room"));
-      Rooms.Add(new Room("Kitchen"));
+      CPU = builder.CPU;
+      RAM = builder.RAM;
+      Storage = builder.Storage;
+      HasGPU = builder.HasGPU;
    }
-   public class Room
+
+   public class Builder
    {
-      public string Name { get; }
-      public Room(string name)
+      public string CPU { get; private set; }
+      public int RAM { get; private set; }
+      public int Storage { get; private set; }
+      public bool HasGPU { get; private set; }
+
+      public Builder WithCPU(string cpu)
       {
-         Name = name;
+         CPU = cpu;
+         return this;
       }
-   }        
+      public Builder WithRAM(int ram)
+      {
+         RAM = ram;
+         return this;
+      }
+      public Builder WithStorage(int storage)
+      {
+         Storage = storage;
+         return this;
+      }
+      public Builder WithGPU(bool gpu)
+      {
+         HasGPU = true;
+         return this;
+      }
+      public Computer Build()
+      {
+         return new Computer(this);
+      }
+   }
 }
 
+
+
+class Program
+{
+   static void Main()
+   {
+      var pc = new Computer.Builder()
+                    .WithCPU("Intel")
+                    .WithRAM(32)
+                    .WithStorage(1000)
+                    .WithGPU(true)
+                    .Build();
+   }
+}

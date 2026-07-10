@@ -1,0 +1,75 @@
+Abstract Factory Pattern:
+-------------------------
+- Creational design pattern
+- provides an interface for creating families of related or dependent objects without specifying their concrete classes.
+- ideal for UI toolkits, platform-specific components, and themed systems
+
+code:
+    // product families
+    public interface IButton
+    {
+        void Paint();
+    }
+    public interface ICheckbox
+    {
+        void Paint();
+    }
+
+    public class WinButton : IButton
+    {
+        public void Paint(){
+            Console.WriteLine("Windows button.");
+        }
+    }
+    public class MacButton : IButton
+    {
+        public void Paint(){
+            Console.WriteLine("Mac button.");
+        }
+    }
+    public class WinCheckbox : ICheckbox 
+    {
+        public void Paint(){
+            Console.WriteLine("Windows Checkbox");
+        }
+    }    
+    public class MacCheckbox : ICheckbox 
+    {
+        public void Paint(){
+            Console.WriteLine("Mac Checkbox");
+        }
+    }
+
+    // abstract factory
+    public interface IGUIFactory
+    {
+        IButton CreatButton();
+        ICheckbox CreateCheckbox();
+    }
+
+    public class WinFactory : IGUIFactory
+    {
+        public IButton CreatButton(){
+            return new WinButton();
+        }
+        public ICheckbox CreateCheckbox(){
+            return new WinCheckbox();
+        }
+    }
+    public class MacFactory : IGUIFactory
+    {
+        public IButton CreatButton(){
+            return new MacButton();
+        }
+        public ICheckbox CreateCheckbox(){
+            return new MacCheckbox();
+        }
+    }
+
+
+    IGUIFactory winFactory = new WinFactory();
+    IButton btn = winFactory.CreatButton();
+    btn.Paint(); // Windows button
+
+    ICheckbox chk = winFactory.CreateCheckbox();
+    chk.Paint();
