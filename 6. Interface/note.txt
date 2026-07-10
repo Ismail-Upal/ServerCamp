@@ -1,0 +1,166 @@
+Interfaces:
+-----------
+- contracts that define what a class CAN DO.
+
+code:
+      public interface IAuthenticable
+      {
+        bool Login(string username, string password);
+        void Logout();
+      }
+
+      public class User : IAuthenticable
+      {
+        public string? Username { get; private set; }
+        public bool Login(string username, string password)
+        {
+            if(password == "12345")
+            {
+              Username = username;
+              Console.WriteLine($"{Username} logged in successfully.");
+              return true;
+            }
+            return false;
+        }
+        public void Logout()
+        {
+            Console.WriteLine($"{Username} has logged out.");
+        }
+      }
+
+
+      IAuthenticable auth = new User();
+      auth.Login("Admin", "12345");
+      auth.Logout();
+
+
+Interface Segragation Principle(ISP):
+- keep interface small and focused.
+- C# 8+ supports default implementation.
+
+code:
+      public interface IWorkable
+      {
+        void Work();
+      }
+      public interface IEatable
+      {
+        void Eat();
+      }
+      public interface ILogger
+      {
+        void Log(string message); // contract
+        void LogError(string error) // default
+        {
+            Log($"[ERROR]: {error}");
+        }
+      }
+
+      public class ConsoleLogger : ILogger
+      {
+        public void Log(string message)
+        {
+            Console.WriteLine(message);
+        }
+      }
+
+      public class Robot : IWorkable
+      {
+        public void Work()
+        {
+            Console.WriteLine("Robot is processing..");
+        }
+      }
+
+      public class Human : IWorkable, IEatable
+      {
+        public void Work()
+        {
+            Console.WriteLine("Human is coding...");
+        }
+        public void Eat()
+        {
+            Console.WriteLine("Human is eating lunch...");
+        }
+      }
+
+
+Interfaces vs Abstract classes:
+-------------------------------
+Feature               Abstract Class                Interface
+Instantiation         No                            No
+Inheritance           Single only                   Multiple allowed
+Implementation        Can have concrete methods     Default methods (C# 8+)
+Fields                Yes                           No (static allowed in C# 8+)
+Access Modifiers      Any                           Public by default
+
+
+Association, Aggregation, and Composition:
+- Object relationships from weak to strong
+
+Association (Uses-a):
+- weakest relationship
+- an Object is passes into another object throuh methods parameters.
+
+code:
+      public class Student
+      {
+        public string? Name { get; set; }
+      }
+
+      public class Course
+      {
+        public void Enroll(Student student)
+        {
+            Console.WriteLine($"{student.Name} enrolled.");
+        }
+      }
+
+
+      var student = new Student { Name = "upal" };
+      var course = new Course();
+      course.Enroll(student);
+
+Aggregation (HaS-A):
+- whole/part 
+- independent lifetimes
+
+code: 
+      public class Employee
+      {
+        public string Name { get; set; }
+      }
+
+      public class Department
+      {
+        public string Name { get; set; }
+        public List<Employee> Employees { get; set; } = new();
+      }
+
+      var emp = new Employee{ Name = "bob" };
+      var dept = new Department { Name = "IT" };
+      dept.Employees.Add(emp);
+      // if dept is deleted, emp still exists
+
+
+Composition (Has-a):
+- whole/part 
+- dependent lifetimes
+
+code: 
+      public class House 
+      {
+      public List Rooms { get; } = new();
+      public House() 
+      {
+      Rooms.Add(new Room("Living Room"));
+      Rooms.Add(new Room("Kitchen"));
+      }
+      public class Room 
+      {
+      public string Name { get; }
+      public Room(string name) => Name = name;
+      }
+      }
+      var house = new House();
+      // If house is destroyed, rooms are destroyed too

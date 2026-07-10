@@ -1,0 +1,314 @@
+using System.IO.Pipes;
+
+SOLID:
+------
+- an acronym for 5 design principles to make software designs more understandable, flexible and maintainable.
+- Each principle addresses a specific design concern, helping developers avoid common pitfalls like tightly coupled code, fragile 
+hierarchies, and bloated classes.
+
+
+S - Single Responsibility principle(srp)
+O - Open/Closed principle(ocp)
+L - Liskov Substitution principle(lsp)
+I - Interface Segregation principle(isp)
+D - Dependency Inversion principle(dip)
+
+
+Single Responsibility Principle (SRP):
+--------------------------------------
+- A class should have only one reason to change. 
+- Each class should be responsible for a single, well-defined piece functionality.
+
+Before — Violating SRP:
+- One class doing everything: data storage, reporting, and email.
+
+code: 
+    public class Employee 
+    {
+        public string Name { get; set; }
+        public decimal Salary { get; set; }
+
+        // DB, Report, Email — 3 reasons to change!
+        public void SaveToDatabase() { ... }
+        public void GenerateReport() { ... }
+        public void SendEmail() { ... }
+    }
+
+After — Following SRP:
+- Each responsibility lives in its own class.
+
+code:
+    public class Employee 
+    {
+        public string Name { get; set; }
+        public decimal Salary { get; set; }
+    }
+
+    public class EmployeeRepository 
+    {
+        public void SaveToDatabase(Employee e) { ... }
+    }
+
+    public class EmployeeReportGenerator 
+    {
+        public void GenerateReport(Employee e) { ... }
+    }
+
+    public class EmployeeEmailService 
+    {
+        public void SendEmail(Employee e) { ... }
+    }
+
+
+Open/Closed Principle (OCP):
+----------------------------
+- Software entities should be open for extension but closed for modification. 
+- Add new behavior without changing existing code.
+
+Before — Violating OCP:
+- Adding a new shape requires modifying this class every time.
+
+code:
+    public class AreaCalculator 
+    {
+        public double CalculateArea(object shape) 
+        {
+            if (shape is Rectangle) 
+            {
+                var r = (Rectangle)shape;
+                return r.Width * r.Height;
+            }
+            else if (shape is Circle) 
+            {
+                var c = (Circle)shape;
+                return Math.PI * c.Radius * c.Radius;
+            }
+            // Modify for every new shape!
+            return 0;
+        }
+    }
+
+After — Following OCP:
+- New shapes implement IShape 
+- no changes needed to 
+
+code:
+    public interface IShape 
+    {
+        double CalculateArea();
+    }
+    public class Rectangle : IShape 
+    {
+        public double Width { get; set; }
+        public double Height { get; set; }
+        public double CalculateArea() => Width * Height;
+    }
+    public class Circle : IShape 
+    {
+        public double Radius { get; set; }
+        public double CalculateArea() => Math.PI * Radius * Radius;
+    }
+    // No modification needed for new shapes!
+    public class Triangle : IShape
+    {
+        public double CalculateArea(){ .. }
+    }
+
+    public class AreaCalculator 
+    {
+        public double CalculateArea(IShape shape) => shape.CalculateArea();
+    }
+  
+    var calculator = new AreaCalculator();
+    var rectangle = new Rectangle { Width = 5.0, Height = 4.0 };
+    var circle = new Circle { Radius = 3.0 };
+    Console.WriteLine(calculator.CalculateArea(rectangle));
+    Console.WriteLine(calculator.CalculateArea(circle));
+
+
+Liskov Substitution Principle (LSP):
+------------------------------------
+- objects of a superclass shall be replaceable with objects of subclasses without affecting correctness.
+- derived classes must be substitution for their base classes.
+
+Before — Violating LSP:
+- an Ostrich is a bird, but it cant fly
+- breaks substitution
+
+code:
+    public class Bird 
+    {
+        public virtual void Fly() { ... }
+    }
+    public class Ostrich : Bird 
+    {
+        // Violation: Ostrich can't fly!
+        public override void Fly() 
+        {
+            throw new InvalidOperationException("Ostrich cannot fly!");
+        }
+    }
+
+After — Following LSP:
+- separate interfaces ensures only flyable birds are passed to fly methods.
+
+code:
+    public interface IFlyable 
+    {
+        void Fly();
+    }
+    public interface IRunnable 
+    {
+        void Run();
+    }
+    public class Sparrow : IFlyable 
+    {
+        public void Fly() { ... }
+    }
+    public class Ostrich : IRunnable 
+    {
+        public void Run() { ... }
+    }
+    // Safe substitution — only flyable birds
+    public void MakeBirdFly(IFlyable bird) 
+    {
+        bird.Fly(); // Safe!
+    }
+
+
+Interface Segregation Principle (ISP):
+--------------------------------------
+- Clients should not be forced to depend on interfaces they do not use. 
+-  Split large interfaces into smaller, focused ones.
+
+Before — Violating ISP:
+- A Robot is forced to implement Eat() and Sleep() it doesn't need.
+
+code:
+    public interface IWorker
+    {
+        void Work();
+        void Eat();
+        void Sleep();
+    }
+    public class Robot : IWorker 
+    {
+        public void Work() { ... }
+        // Violation: Robot doesn't need these!
+        public void Eat() { /* throw ex */ }
+        public void Sleep() { /* throw ex */ }
+    }
+
+After — Following ISP:
+- small, focused interfaces
+- each class implements only what it needs.
+
+code:
+    public interface IWorkable 
+    {
+        void Work();
+    }
+    public interface IFeedable 
+    {
+        void Eat();
+    }
+    public interface ISleepable 
+    {
+        void Sleep();
+    }
+    public class Human : IWorkable, IFeedable, ISleepable 
+    {
+        public void Work() { ... }
+        public void Eat() { ... }
+        public void Sleep() { ... }
+    }
+    public class Robot : IWorkable 
+    {
+        public void Work() { ... }
+    }
+
+
+Dependency Inversion Principle (DIP):
+-------------------------------------
+- High-level modules should be not depend on low-level modules.
+- Both should depend on abstractions.
+- Depend on abstractions, not concretions.
+
+Before — Violating DIP:
+- OrderService is tightly coupled to SqlDatabase
+
+code:
+    public class OrderService
+    {
+        private readonly SqlDatabase _database;
+        public OrderService()
+        {
+            _database = new SqlDatabase(); // tight coupling
+        }
+
+        public void SaveOrder(Order order)
+        {
+            _database.Save(order);
+        }
+    }
+
+
+After — Following DIP:
+- depend on IDatabase abstraction - swap implementations freely.
+
+code:
+    public interface IDatabase // low-level abstraction
+    {
+        void Save(object entity);
+    }
+
+    public class SqlDatabase : IDatabase // low-level
+    {
+        public void Save(object e){ ... }
+    }
+
+    public class MongoDatabase : IDatabase // low-level
+    {
+        public void Save(object e){ ... }
+    }
+
+    public class OrderService // High-level module depends on abstraction(interface)
+    {
+        private readonly IDatabase _database;
+        public OrderService(IDatabase database)
+        {
+            _database = database; // Dependency injection
+        }
+        public void SaveOrder(Order order)
+        {
+            _database.Save(order);
+        }
+    }
+
+    var service = new OrderService(new SqlDatabase());
+    var service = new OrderService(new MongoDatabase());
+
+
+
+Benefits of SOLID:
+- Easier Maintenance: 
+    Changes are localized - modify one class without breaking others.
+- Better Testability: 
+    Small, focused classes with injected dependencies are easy to unit test.
+- Reduced Coupling: 
+    Abstractions and interfaces decouple modules, reducing ripple effects.
+- Increased Reusability: 
+    Single-purpose classes can be reused across different parts of the system.
+- Scalable Architecture: 
+    New features are added by extending, not modifying - the system grows gracefully.
+
+
+Common Pitfalls & Best Practices:
+- Don't Over-Engineer:
+    Apply SOLID when complexity demands it - not prematurely.
+- Start Simple, Refactor When Needed:
+    Write working code first, then refactor as patterns emerge.
+- YAGNI — You Aren't Gonna Need It:
+    Don't build abstractions for hypothetical future requirements.
+- Unit Testing Validates SOLID:
+    If code is hard to test, it likely violates SOLID principles.

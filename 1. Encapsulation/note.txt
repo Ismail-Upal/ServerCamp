@@ -1,0 +1,130 @@
+Encapsulation:
+--------------
+Defn: 
+- Bundling data (fields) and methods into a single unit while restricting direct access to internal components.
+
+Benefits: 
+- protects objects integrity by preventing invalid states
+- hides internal implementation details
+- allows internal changes without affecting external code
+
+Validation:
+- Logic inside accessors ensures data is correct before it is stored.
+
+code:
+      public class BankAccount
+      {
+          // public decimal Balance { get; set; } // auto-implemented property
+          private decimal _balance; // hidden field
+          public decimal Balance // full property
+          {
+              get { return _balance; }
+              private set
+              {
+                  if (value < 0)
+                  {
+                      throw new ArgumentException("Balance can't be negative.");
+                  }
+                  _balance = value;
+              }
+          }
+
+          public void Deposite(decimal amount)
+          {
+              if (amount <= 0)
+              {
+                  throw new ArgumentException("Deposite must be positive.");
+              }
+              Balance += amount; // uses validation in setter
+          }
+      }
+
+Access Modifiers:
+- public -> accessible everywher
+- private -> accessible only within the containing class 
+- protected -> accessible within the own class and derived classes
+- internal -> accessible within the same assembly
+
+Accessors:
+- get(read)
+- set(write)
+- init(write-only during initialization)
+
+code:
+      public class Employee
+      {
+          public int Id { get; set; } // auto-implemented
+          public string Department { get; init; } = string.Empty; // init-only: can be set at object creation, then immutable
+          private string _email = string.Empty; // full property with validation
+          public string Email
+          {
+              get { return _email; }
+              set
+              {
+                  if (!value.Contains("@"))
+                  {
+                      throw new FormatException("Invalid email.");
+                  }
+                  _email = value;
+              }
+          }
+      }
+
+      var emp = new Employee { Id = 1, Department = "IT" };
+      emp.Email = "john@email.com";
+      emp.Department = "CSE" // not possible
+
+      public string Name { get; set; } = string.Empty // non-nullable, something must be assigned
+      public string? Name { get; set; } // nullable, 
+
+
+Auto-implemented Properties:
+- compiler creates the hidden backing field automatically.
+- best for simple data transfer with no additional logic.
+
+code: 
+      public class Product
+      {
+          public string Name { get; set; }
+          public double Price { get; set; }
+      }
+
+Full Properties:
+- We declare the backing field explicitly to add custom logic such as validation, computed valued or changes notifications.
+
+code: 
+      public class ProductFull
+      {
+          private double _price;
+          public double Price
+          {
+              get { get; set; }
+              set
+              {
+                  if(value < 0) throw new ArgumentException("Price can't be negative.");
+                  _price = value;
+              }
+          }
+      }
+
+
+Data validation:
+- performed in the set accessor to enforce business rules and data integrity.
+
+Computed Properties:
+- Read-only properties that calculate a value dynamically from other fields. 
+- No backing field needed.
+
+code: 
+      public class Rectangle
+      {
+          public double Width { get; set; }
+          public double Height { get; set; }
+
+          public double Area // computed property
+          {
+              get { return Width * Height; } 
+          }
+      }
+
+

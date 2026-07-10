@@ -1,0 +1,203 @@
+Inheritance:
+------------
+Defn:
+- Inheritance is a mechanism where a new class(derived) acquires properties and behaviours of an existing class(base).
+
+Types:
+- single Inheritance only (a class only inherit from one base class).
+- supports multilevel chains (A -> B -> C)
+- Hierarchical trees (A -> B and A -> C)
+
+Pros:
+- Code reuse
+- logical hierarchy
+- polymorphism
+
+Cons:
+- tight coupling
+- fragile base class problem
+- breaks encapsulation if not careful
+
+code:
+      public class Vehicle // Base
+      {
+          public string Brand { get; set; } = string.Empty;
+          public void Start()
+          {
+              Console.WriteLine($"{Brand} vehicle starting...");
+          }
+      }
+
+      public class Car : Vehicle // Derived
+      {
+          public int TrunkCapacity { get; set; }
+      }
+
+
+      Car c = new Car();
+      c.Brand = "Toyota"; // inherited
+      c.Start(); // inherited method
+
+
+Base Class:
+- The parent providing common functionality
+
+Derived Class:
+- The Child extending or specializing the parent
+
+base keyword:
+- Used to call a base class constructor or access base class members that are hidden or overridden.
+
+code: 
+      public class Person
+      {
+          public string Name { get; set; }
+          public Person(string name)
+          {
+              Name = name;
+          }
+          public virtual void Introduce()
+          {
+              Console.WriteLine($"I am {Name}.");
+          }
+      }
+
+      public class Student : Person
+      {
+          public string Major { get; set; }
+          public Student(string name, string major) : base(name) // calling base constructor
+          {
+              Major = major;
+          }
+
+          public override void Introduce()
+          {
+              base.Introduce(); // call base implementation
+              Console.WriteLine($"I study {Major}.");
+          }
+      }
+
+      Student s = new Student("upal", "CSE");
+      s.Introduce();
+
+
+Method Overriding(override):
+- replace a virtual base method. 
+- The derived method is invoked even when accessed through a base class reference.
+- Runtime polymorphism
+
+Method Hiding(new):
+- creates a completely new method with the same name.
+- the base method is still called when accessed through a base class reference
+
+code:
+      public class Animal
+      {
+          public virtual void Speak()
+          {
+              Console.WriteLine("Animal speaks");
+          }
+          public void Move()
+          {
+              Console.WriteLine("Animal moves");
+          }
+      }
+
+      public class Dog : Animal
+      {
+          public override void Speak() // overriding
+          {
+              Console.WriteLine("Dog barks."); 
+          }
+
+          public new void Move() // hiding
+          {
+              Console.WriteLine("Dog runs.");
+          }
+      }
+
+      Animal a = new Dog();
+      a.Speak(); // "Dog barks"  (override works polymorphically)
+      a.Move(); // "Animal moves" (new hides it; base method called via base ref)
+
+
+protected members:
+- The protected access modifier makes members accessible within their own class and in derived classes, but not from unrelated classes.
+- This is useful for providing helper methods or internal state to subclasses without exposing them publicly.
+
+code: 
+      public class Account
+      {
+          protected decimal Balance { get; set; }
+          public Account(decimal initialBalance) 
+          {
+              Balance = initialBalance;
+          }
+          protected void LogTransaction(string msg)
+          {
+              Console.WriteLine($"LOG: {msg}");
+          }
+      }
+      public class SavingsAccount : Account
+      {
+          public SavingsAccount(decimal initialBalance) : base(initialBalance) { }
+          public void AddInterest(decimal rate)
+          {
+              // Can access protected Balance and LogTransaction
+              decimal interest = Balance * rate;
+              Balance += interest;
+              LogTransaction($"Interest added: {interest}");
+          }
+      }
+      
+      SavingsAccount s = new SavingsAccount(1000);
+      s.AddInterest(0.05m)      
+
+
+Inheritance:
+- An "IS-A" relationship.
+- Use when the derived class truly is a type of the base class.
+
+Composition:
+- A "HAS-A" relationship. 
+- Use when a class needs to use functionality of another class without being that type
+
+Composition Wins:
+- There is no true "IS-A" relationship.
+- You need to reuse behavior from multiple sources (C# doesn't allow multiple class inheritance)
+- You want looser coupling and easier testing
+
+
+BAD: Inheritance
+- Penguin IS NOT really a FlyingBird
+
+code:
+      public class Bird
+      {
+          public virtual void Fly() { }
+      }
+      public class Penguin : Bird
+      {
+          public override void Fly() => throw new Exception("Can't fly");
+      }
+
+
+Good: Composition
+- Car HAS-A Engine
+
+code:
+      public class Engine
+      {
+          public void Start() => Console.WriteLine("Engine started");
+      }
+      public class Car
+      {
+          private readonly Engine _engine = new Engine(); // Composition
+          public void Start()
+          {
+              _engine.Start();
+              Console.WriteLine("Car is ready to go.");
+          }
+      }
+
+

@@ -1,0 +1,102 @@
+E-Commerce Order Processing System:
+----------------------------------
+- Consider a real-world E-Commerce Order Processing System.
+- Below is a monolithic OrderProcessor class that handles everything - a textbook example of multiple SOLID violations.
+
+Problem:
+- This single class violates:
+    SRP (too many responsibilities)
+    OCP (hard-coded payment logic)
+    ISP (no interfaces)
+    DIP (concrete dependencies)
+- Any change - adding a new payment method, changing validation rules, or switching the database - requires modifying this class directly
+
+code: monolithic(bad)
+    public class OrderProcessor
+    {
+        public void Process(Order order)
+        {
+            // validate
+            if(order.Items.Count == 0) throw...
+
+            // check inventory
+            if(!Inventory.InStock(order)) throw...
+
+            // process payment(hard-coded)
+            if(order.PaymentType == "Credit") { .. }
+            else if(order.PaymentType == "Paypal) { .. }
+
+            // save to DB 
+            new SqlDatabase.Save(order);
+
+            // send email
+            new EmailService().Send(order);
+        }
+    }
+
+Refactoring Step:
+- applying each SOLID principle systematically transform the monolithic OrderProcessor into a clean, maintainable architecture..
+
+1. Apply SRP 
+    Split into OrderValidator, PaymentProcessor, InventoryManager, NotificationService , each with a single responsibility.
+2. Apply OCP 
+    Use the Strategy Pattern for different payment methods. Add new payment types without modifying existing code.
+3. Apply LSP
+    Ensure all payment processors are substitutable. Any IPaymentProcessor can be swapped without breakin behaviour.
+4. Apply ISP 
+    Define separate, focused interfaces: IOrderValidator, IPaymentProcessor, IInventoryService, INotificationService.
+5. Apply DIP 
+    Inject dependencies via constructor. Use a DI container to wire up concrete implementations at runtime.
+
+
+code: clean, maintainable code structure
+- after applying all five SOLID principles, the system is modular and easy to extend.
+
+    //interfaces
+    public interface IOrderValidator
+    {
+        ValidationResult Validate(Order order);
+    }
+    public interface IPaymentProcessor
+    {
+        PaymentResult Process(Order order);
+    }
+    public interface IInventoryService
+    {
+        bool CheckAvailability(Order order);
+    }
+    public interface INotificationService
+    {
+        void SendConfirmation(Order order);
+    }
+
+    public class OrderProcessor 
+    {
+        private readonly IOrderValidator _validator;
+        private readonly IPaymentProcessor _payment;
+        private readonly IInventoryService _inventory;
+        private readonly INotificationService _notify;
+
+        public OrderProcessor(
+            IOrderValidator validator,
+            IPaymentProcessor payment,
+            IInventoryService inventory,
+            INotificationService notify) 
+        {
+            _validator = validator;
+            _payment = payment;
+            _inventory = inventory;
+            _notify = notify;
+        }
+
+        public void Process(Order order) 
+        {
+            _validator.Validate(order);
+            _inventory.CheckAvailability(order);
+            _payment.Process(order);
+            _notify.SendConfirmation(order);
+        }
+    }
+
+
+

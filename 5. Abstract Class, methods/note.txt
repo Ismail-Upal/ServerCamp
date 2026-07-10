@@ -1,0 +1,59 @@
+Abstract:
+---------
+- define template/blueprint.
+- cannot instantiate.
+- forces implementation in derived classes.
+
+code:
+      public abstract class PaymentProcessor
+      {
+        public void ValidateAmount(decimal amount)
+        {
+            if (amount <= 0)
+            {
+              throw new ArgumentException("Amount must be positive.");
+            }
+        }
+        public abstract void ProcessPayment(decimal amount, string currency);
+        public abstract string ProcessorName { get; }
+        public virtual void LogTransaction(string transactionId)
+        {
+            Console.WriteLine($"[{ProcessorName}] Transaction logged: {transactionId}.");
+        }
+      }
+
+      public class StripeProcessor : PaymentProcessor
+      {
+        public override string ProcessorName
+        {
+            get
+            {
+              return "Stripe";
+            }
+        }
+        public override void ProcessPayment(decimal amount, string currency)
+        {
+            ValidateAmount(amount);
+            Console.WriteLine($"Processing ${amount} {currency} via Stripe API");
+        }
+
+        public override void LogTransaction(string transactionId)
+        {
+            Console.WriteLine($"Stripe Audit: {transactionId}");
+        }
+      }
+      public class PayPalProcessor : PaymentProcessor
+      {
+        public override string ProcessorName => "PayPal";
+
+        public override void ProcessPayment(decimal amount, string currency)
+        {
+            ValidateAmount(amount);
+            Console.WriteLine($"Processing ${amount} {currency} via PayPal SDK");
+        }
+      }
+
+      PaymentProcessor stripe = new StripeProcessor();
+      stripe.ProcessPayment(100, "USD");
+
+      // PaymentProcessor pp = new PaymentProcessor(); // ERROR: Cannot instantiat

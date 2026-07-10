@@ -1,0 +1,89 @@
+Polymorphism:
+-------------
+-many forms
+
+Compile-time Polymorphism (method overloading):
+-same method name, different signatures
+- Resolved at compile time.
+
+code: 
+    Public class Calculator
+    {
+        // Overload 1: Two integers
+        public void Add(int a, int b) { Console.WriteLine(a + b); }
+
+        // Overload 2: Three integers
+        public void Add(int a, int b, int c) { Console.WriteLine(a + b + c); }
+
+        // Overload 3: Doubles
+        public void Add(double a, double b) { Console.WriteLine(a + b); }
+
+        // Overload 4: Array parameter
+        public void Add(params int[] numbers) { Console.WriteLine(numbers.Sum()); }
+
+        // Overload 5: Different parameter types
+        public void Add(string a, string b) { Console.WriteLine(a + b); }
+    }
+
+    var calc = new Calculator();
+    calc.Add(2, 3);                 // int version
+    calc.Add(2.5, 3.5);             // double version
+    calc.Add("Hello", "World");     // string version
+    calc.Add(1, 2, 3, 4, 5);        // params version
+
+
+Runtime Polymorphism(method overridding):
+- virtual / override
+-behavior determined at Runtime based on actual object type.
+
+code:
+    public class Employee
+    {
+        public string Name { get; set; } = string.Empty;
+        public decimal BaseSalary { get; set; }
+        public virtual decimal CalculateSalary()
+        {
+            return BaseSalary;
+        }
+        public virtual void Work()
+        {
+            Console.WriteLine($"{Name} is working."); ;
+        }
+    }
+
+    public class Developer : Employee
+    {
+        public decimal Bonus { get; set; }
+        public override decimal CalculateSalary()
+        {
+            return BaseSalary + Bonus;
+        }
+        public override void Work()
+        {
+            Console.WriteLine($"{Name} is writing code.");
+        }
+    }
+
+    public class Manager : Employee
+    {
+        public decimal TeamBonus { get; set; }
+        public override decimal CalculateSalary()
+        {
+            return BaseSalary + TeamBonus;
+        }
+        public override void Work()
+        {
+            Console.WriteLine($"{Name} is managing the team.");
+        }
+    }
+
+    Employee emp1 = new Developer { Name = "alice", BaseSalary = 5000, Bonus = 1000 };
+    Employee emp2 = new Manager { Name = "bob", BaseSalary = 6000, TeamBonus = 2000 };
+
+    List<Employee> employees = new() { emp1, emp2 };
+
+    foreach (var emp in employees)
+    {
+        Console.WriteLine($"{emp.Name}: ${emp.CalculateSalary()}");
+        emp.Work();
+    }

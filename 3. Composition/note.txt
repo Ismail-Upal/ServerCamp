@@ -1,0 +1,47 @@
+Composition:
+------------
+- It creates flexible "HAS-A" systems.
+- flexible
+- favor Composition over inheritance for flexibility and testability.
+
+code:
+      public interface INotificationChannel
+      {
+          void Send(string message, string recipient);
+      }
+
+      public class EmailChannel : INotificationChannel { }
+      public class SmsChannel : INotificationChannel { }
+      public class DiscordChannel : INotificationChannel { }
+
+      public class NotificationService
+      {
+          private readonly List _channels;
+          public NotificationService(IEnumerable channels)
+          {
+              _channels = channels.ToList();
+          }
+
+          public void NotifyAll(string message, string recipient)
+          {
+              foreach(var channel in _channels)
+              {
+                  channel.Send(message, recipient);
+              }
+          }
+      }
+
+      class Program
+      {
+          static void Main()
+          {
+              var email = new EmailChannel();
+              var sms = new SmsChannel();
+              var discord = new DiscordChannel();
+
+              var channels = new List<INotificationChannel> { email, sms, discord };
+              var service = new NotificationService(channels);
+              
+              service.NotifyAll("System recovered", "user01");
+          }
+      }
