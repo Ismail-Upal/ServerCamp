@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ServerCamp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4d4925b7cd7d8899a149ac30ea5489e52fce2c49")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9310e8f2dadc3e227fa96881e278bd756a0510cd")]
 [assembly: System.Reflection.AssemblyProductAttribute("ServerCamp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ServerCamp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
