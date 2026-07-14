@@ -1,0 +1,13 @@
+Adapter Pattern:
+----------------
+- Allows incompatible interfaces to work together.
+- Acts as a bridge between two incompatible interfaces.
+
+Real-World Analogy:
+- A travel power adapter that lets you plug a US device into a European socket - same function, different interface
+
+When to Use:
+- When you want to use an existing class but its interface doesn't match what you need
+- When creating reusable classes that need to work with unpredictable interfaces
+
+

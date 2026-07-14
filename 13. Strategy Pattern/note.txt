@@ -1,0 +1,52 @@
+Strategy Pattern:
+-----------------
+- Behavioral pattern
+- defines a family of algorithms, encapsulates each one, and make them interchangeable.
+- the client can swap strategies at runtime without modifying the context class.
+- Interchangeable algorithms
+
+// Strategy interface & implementation
+public interface IPaymentStrategy
+{
+    void Pay(int amount);
+}
+
+public class CreditCardPayment : IPaymentStrategy
+{
+    public void Pay(int amount)
+    {
+        Console.WriteLine($"Paid {amount} via credit card");
+    }
+}
+
+public class PayPalPayment : IPaymentStrategy
+{
+    public void Pay(int amount)
+    {
+        Console.WriteLine($"Paid {amount} via PayPal");
+    }
+}
+
+
+// context
+public class ShoppingCart
+{
+    private IPaymentStrategy _strategy;
+    public void SetPaymentStrategy(IPaymentStrategy strategy)
+    {
+        _strategy = strategy;
+    }
+    public void Checkout(int amount)
+    {
+        _strategy.Pay(amount);
+    }
+}
+
+
+var cart = new ShoppingCart();
+
+cart.SetPaymentStrategy(new CreditCardPayment());
+cart.Checkout(100);
+
+cart.SetPaymentStrategy(new PayPalPayment());
+cart.Checkout(200);

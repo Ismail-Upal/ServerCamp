@@ -1,4 +1,12 @@
-﻿public interface IObserver
+Observer Pattern:
+-----------------
+- Behavioral Pattern
+- defines a one-to-many dependency between objects.
+- when one object changes state, all dependents are notified automatically.
+- Event subscription / Pub-Sub
+
+
+public interface IObserver
 {
    void Update(string message);
 }
@@ -32,24 +40,16 @@ public class NewsAgency
    }
 }
 
+var agency = new NewsAgency();
+var channel1 = new NewsChannel();
+var channel2 = new NewsChannel();
+var channel3 = new NewsChannel();
 
+agency.Subscribe(channel1);
+agency.Subscribe(channel2);
+agency.Subscribe(channel3);
 
-class Program
-{
-   static void Main()
-   {
-      var agency = new NewsAgency();
-      var channel1 = new NewsChannel();
-      var channel2 = new NewsChannel();
-      var channel3 = new NewsChannel();
+agency.SetNews("This pattern works");
 
-      agency.Subscribe(channel1);
-      agency.Subscribe(channel2);
-      agency.Subscribe(channel3);
-
-      agency.SetNews("This pattern works");
-
-      agency.Unsubscribe(channel2);
-      agency.SetNews("second try");
-   }
-}
+agency.Unsubscribe(channel2);
+agency.SetNews("second try");

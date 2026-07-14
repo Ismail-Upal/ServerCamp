@@ -4,6 +4,9 @@ Factory Pattern:
 - defines an interface for creating objects.
 - but lets subclasses decide which class to instantiate.
 - promote loose coupling betn creators and concrete products.
+- Delegate creation to subclasses
+- use it when we dont know which obj we are going to create.
+
 
 code:
     // product interface & implementations

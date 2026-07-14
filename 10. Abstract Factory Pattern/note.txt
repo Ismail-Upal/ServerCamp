@@ -3,6 +3,9 @@ Abstract Factory Pattern:
 - Creational design pattern
 - provides an interface for creating families of related or dependent objects without specifying their concrete classes.
 - ideal for UI toolkits, platform-specific components, and themed systems
+- Families of related objects
+- when multiple dependent object are going to needed.
+
 
 code:
     // product families

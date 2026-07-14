@@ -4,6 +4,7 @@ Builder Pattern:
 - separates the construction of a complex object from its representation.
 - uses a fluent interface to configure properties step by step before building the final immutable object.
 - The Builder pattern eliminates telescoping constructors and makes object creation readable and maintainable.
+- Step-by-step complex object construction
 
 
 public class Computer
